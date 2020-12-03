@@ -8,6 +8,8 @@ RANGE_OF_CHARS = 52  # Include a-z and A-Z
 # Generic function to receive a message from connected clients
 # The data is received in chunks of 16 bytes with '\n' as the
 # end of data marker
+
+
 def receive_message(connection):
     msg = ""
     while True:
@@ -21,14 +23,17 @@ def receive_message(connection):
     return msg.rstrip()
 
 # Helper function to send a message back to client
+
+
 def send_message(connection, msg):
     connection.sendall((msg + '\n').encode())
+
 
 class Client:
     def __init__(self, client_address, socket):
         self.client_address = client_address
         self.socket = socket
-    
+
     def send_req(self, md5, start, end):
         msg = str(md5) + "-" + str(start) + "-" + str(end)
         send_message(self.socket, msg)
@@ -36,16 +41,21 @@ class Client:
         if res == "OK":
             return True
         return False
-    
+
     def waitForResults(self, outputQueue):
         msg = receive_message(self.socket)
         outputQueue.put(str(self.client_address) + ":" + msg)
+
 
 class ClientManager:
     def __init__(self):
         self.clients = {}
         self.activeThreads = {}
         self.outputQueue = Queue()
+        self.clientsQueue = Queue()
+
+    def listenForClients(self):
+        whiw
 
     def waitForResults(self):
         while True:
@@ -75,11 +85,10 @@ class ClientManager:
         n_clients = len(free_clients)
         totalRange = pow(RANGE_OF_CHARS, n_chars)
         increment = int(totalRange/n_clients)
-        overflow = totalRange%n_clients
+        overflow = totalRange % n_clients
+
         start = 0
-
         count = 0
-
         for i in range(n_clients):
             freeClient = free_clients[i]
             end = start + increment
@@ -88,14 +97,24 @@ class ClientManager:
             if freeClient.send_req(start, end):
                 start += increment
                 count += 1
-                workerThread = Thread(target=freeClient.waitForResults, args=(self.outputQueue))
+                workerThread = Thread(
+                    target=freeClient.waitForResults, args=(self.outputQueue))
                 workerThread.start()
                 self.activeThreads[free_clients[i]] = workerThread
-        
+
         if count > 0:
             print('Divided work among ' + str(count) + ' workers')
         else:
             print('Error dividing work. Please try again')
+
+
+def listenForClients(sock, client_manager):
+    # Listen for incoming connections
+    while True:
+        sock.listen(1)
+        connection, client_address = sock.accept()
+        client_manager.add_client(client_address, connection)
+
 
 def start_server():
     # Create a TCP/IP socket
@@ -111,13 +130,9 @@ def start_server():
     sock.bind(server_address)
 
     client_manager = ClientManager()
-
-    # Listen for incoming connections
-    while True:
-        sock.listen(1)
-        connection, client_address = sock.accept()
-
-        client_manager.add_client(client_address, connection)
+    clientListener = Thread(target=listenForClients, args=(sock, client_manager))
+    clientListener.start()
+    return client_manager
 
 
 if __name__ == "__main__":
