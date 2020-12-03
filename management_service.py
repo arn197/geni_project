@@ -25,10 +25,9 @@ def send_message(connection, msg):
     connection.sendall((msg + '\n').encode())
 
 class Client:
-    def __init__(self, id, client_address, socket):
+    def __init__(self, client_address, socket):
         self.client_address = client_address
         self.socket = socket
-        self.id = id
     
     def send_req(self, md5, start, end):
         msg = str(md5) + "-" + str(start) + "-" + str(end)
@@ -40,12 +39,11 @@ class Client:
     
     def waitForResults(self, outputQueue):
         msg = receive_message(self.socket)
-        outputQueue.put(str(self.id) + ":" + msg)
+        outputQueue.put(str(self.client_address) + ":" + msg)
 
 class ClientManager:
     def __init__(self):
         self.clients = {}
-        self.latestID = 0
         self.activeThreads = {}
         self.outputQueue = Queue()
 
@@ -57,21 +55,19 @@ class ClientManager:
             print(data)
 
     def add_client(self, client_address, connection):
-        newID = self.latestID
-        send_message(connection, str(newID))
+        send_message(connection, str(client_address))
         if receive_message(connection) == "OK":
-            self.latestID += 1
-            client = Client(newID, client_address, connection)
-            self.clients[newID] = client
+            client = Client(client_address, connection)
+            self.clients[client_address] = client
         else:
             connection.close()
             return
 
     def get_free_clients(self):
         free_clients = []
-        for i in range(self.latestID):
-            if i not in self.activeThreads:
-                free_clients.append(i)
+        for client in self.clients:
+            if client.client_address not in self.activeThreads:
+                free_clients.append(client)
         return free_clients
 
     def new_request(self, md5, n_chars):
@@ -85,7 +81,7 @@ class ClientManager:
         count = 0
 
         for i in range(n_clients):
-            freeClient = self.clients[free_clients[i]]
+            freeClient = free_clients[i]
             end = start + increment
             if i == n_clients - 1:
                 end += overflow
