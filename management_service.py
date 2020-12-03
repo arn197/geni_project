@@ -54,9 +54,6 @@ class ClientManager:
         self.outputQueue = Queue()
         self.clientsQueue = Queue()
 
-    def listenForClients(self):
-        whiw
-
     def waitForResults(self):
         while True:
             data = self.outputQueue.get()
