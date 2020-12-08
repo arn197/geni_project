@@ -83,10 +83,10 @@ class Worker:
     def startCracking(self, md5,start,end):
         while(self.iter<self.limit):
             print(f"Client Iteration Number {self.iter}")
-            res = self.crack(md5,start,end)
+            res, pwd = self.crack(md5,start,end)
             if res == True:
                 print("SUCCESS")
-                send_message(self.sock,"SUCCESS")
+                send_message(self.sock,"SUCCESS:")
             else:
                 if self.iter<self.limit:
                     print("RETRY")
@@ -100,15 +100,15 @@ class Worker:
                     
                 
     def crack(self,md5,start,end):
+        return True, "hello"
         st = start
         en = end
-        buffer = ""
         for i in range(st,en+1):
             value = numtobase(i)
-            offset = 5 - len(value)
+            offset = 1
             temp = 'A'*offset + value
-            buffer+=temp
-            determined = generated_hash(buffer)
+            print(temp)
+            determined = generated_hash("hello")
             if compareHash(md5,determined):
                 return True
        
