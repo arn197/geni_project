@@ -52,14 +52,14 @@ class ClientManager:
         self.clients = {}
         self.activeThreads = {}
         self.outputQueue = Queue()
-        self.clientsQueue = Queue()
 
     def waitForResults(self):
         while True:
             data = self.outputQueue.get()
             clientID = int(data.split(":")[0])
             self.activeThreads[clientID].join()
-            print(data)
+            password = data.split(":")[1]
+            return password
 
     def add_client(self, client_address, connection):
         send_message(connection, str(client_address))
