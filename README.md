@@ -12,3 +12,7 @@ To run the webapp, the steps to be followed are:
 
 
 Virtual Env is supported so we can do these steps after running `source env/bin/activate`
+
+
+To test the application you can hash a password using 
+https://www.md5hashgenerator.com/
