@@ -42,7 +42,7 @@ def send_message(connection,msg):
 
 
 def generated_hash(data):
-    result = hashlib.md5(data)
+    result = hashlib.md5(data.encode('utf-8'))
     return result.digest()
 
 def compareHash(actual, determined):
@@ -72,8 +72,8 @@ class Worker:
         msg = receive_message(socket)
         temp = msg.split('-')
         md5 = temp[0]
-        start = temp[1]
-        end = temp[2]
+        start = int(temp[1])
+        end = int(temp[2])
         self.startCracking(md5,start,end)
 
     def end_connection(self,socket):

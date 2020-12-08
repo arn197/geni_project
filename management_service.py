@@ -72,8 +72,9 @@ class ClientManager:
 
     def get_free_clients(self):
         free_clients = []
-        for client in self.clients:
-            if client.client_address not in self.activeThreads:
+        for client_address in self.clients:
+            client = self.clients[client_address]
+            if client_address not in self.activeThreads:
                 free_clients.append(client)
         return free_clients
 
@@ -92,7 +93,7 @@ class ClientManager:
             end = start + increment
             if i == n_clients - 1:
                 end += overflow
-            if freeClient.send_req(start, end):
+            if freeClient.send_req(md5, start, end):
                 start += increment
                 count += 1
                 workerThread = Thread(
