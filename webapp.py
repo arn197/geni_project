@@ -6,7 +6,7 @@ app = Flask(__name__)
 hashList = []
 passwordList = {}
 activeThreads = {}
-clientManager = manager.start_server()
+clientManager = manager.start_server(6000)
 
 @app.route('/')
 def index():

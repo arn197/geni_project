@@ -64,6 +64,8 @@ class Worker:
         self.sock.connect(server_address)
         #msg = str(self.client_id) + " Connected to server"
         #send_message(self.sock,msg)
+        msg = receive_message(self.sock)
+        send_message(self.sock, "OK")
         self.getrequest(self.sock)
 
     def getrequest(self,socket):

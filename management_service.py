@@ -79,6 +79,7 @@ class ClientManager:
 
     def new_request(self, md5, n_chars):
         free_clients = self.get_free_clients()
+        print(free_clients)
         n_clients = len(free_clients)
         totalRange = pow(RANGE_OF_CHARS, n_chars)
         increment = int(totalRange/n_clients)
@@ -113,15 +114,15 @@ def listenForClients(sock, client_manager):
         client_manager.add_client(client_address, connection)
 
 
-def start_server():
+def start_server(port_number):
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    if(len(sys.argv) < 2):
-        print("Please enter a port number")
-        exit()
-    port_number = int(sys.argv[1])
+    # if(len(sys.argv) < 2):
+    #     print("Please enter a port number")
+    #     exit()
+    # port_number = int(sys.argv[1])
 
     server_address = (socket.gethostname(), port_number)
     sock.bind(server_address)
@@ -133,4 +134,4 @@ def start_server():
 
 
 if __name__ == "__main__":
-    start_server()
+    start_server(5000)
