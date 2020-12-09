@@ -25,33 +25,33 @@ def numtobase(data):
 
 
 
-# for i in range(1,53):
-i = 5155
+for i in range(0, 140607):
 
-value = numtobase(i)
-print(f'value after base 52:  {value}')
+    value = numtobase(i)
+    # print(f'value after base 52:  {value}')
+    offset = 3-len(value)
+    temp = 'A'*offset + value
+    if temp == 'abc':
+        print("hello")
 
 
-offset = 0
-temp = 'A'*offset + value
+    # temp = 'A'*offset + value
 
 
-print(f' Value for length of 5: {temp}')
+    # print(f' Value for length of 5: {temp}')
     # value = numtobase(i)
     # offset = 1
     # temp = 'A'*offset + value
     # print(temp)
-    # calc = hashlib.md5(value.encode())
+        calc = hashlib.md5(temp.encode())
 
 
-    # org = b'\xffDW\n\xca\x82A\x91Hp\xaf\xbc1\x0c\xdb\x85'
+        org = "900150983cd24fb0d6963f7d28e17f72"
     # print(org)
     # print(calc.digest())
+        print(calc.hexdigest(), org)
 
-
-    # if org == calc.digest():
-        # print('True')
-    # else:
-        # print("False")
+        if org == calc.digest():
+            print('True')
 
 

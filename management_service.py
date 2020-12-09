@@ -58,6 +58,7 @@ class ClientManager:
             data = self.outputQueue.get()
             clientID = data.split(":")[0]
             success = data.split(":")[1] == "SUCCESS"
+            print(success)
             self.activeThreads[clientID].join()
             self.activeThreads.pop(clientID)
             if success:
@@ -84,7 +85,7 @@ class ClientManager:
         free_clients = self.get_free_clients()
         print(free_clients)
         n_clients = len(free_clients)
-        totalRange = pow(RANGE_OF_CHARS, n_chars)
+        totalRange = pow(RANGE_OF_CHARS, n_chars) - 1
         increment = int(totalRange/n_clients)
         overflow = totalRange % n_clients
 

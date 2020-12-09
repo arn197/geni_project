@@ -6,7 +6,7 @@ import hashlib
 
 
 def numtobase(data):
-    str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLNMOPQRSTUVWXYZ"
+    str = "ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     #str = "123456789ABCDEF"
     s = ""
     if data == 0:
@@ -42,8 +42,8 @@ def send_message(connection,msg):
 
 
 def generated_hash(data):
-    result = hashlib.md5(data.encode('utf-8'))
-    return result.digest()
+    result = hashlib.md5(data.encode())
+    return result.hexdigest()
 
 def compareHash(actual, determined):
     if determined == actual:
@@ -86,9 +86,9 @@ class Worker:
         res, pwd = self.crack(md5,start,end,num_char)
         if res == True:
             print("SUCCESS")
-            msg = "Password is " + str(pwd) + " :"
-            send_message(self.sock,"SUCCESS:" + msg)
+            send_message(self.sock,"SUCCESS:" + pwd)
         else:
+            print("FAIL")
             send_message(self.sock,"FAIL:")
         return
     
@@ -100,10 +100,9 @@ class Worker:
             value = numtobase(i)
             offset = num_char-len(value)
             temp = 'A'*offset + value
-            print(temp)
             determined = generated_hash(temp)
             if compareHash(md5,determined):
-                return True , determined
+                return True , temp
         return False, ""
 
 
