@@ -27,7 +27,7 @@ def numtobase(data):
 def receive_message(connection):
     msg = ""
     while True:
-        data = connection.recv(50).decode()
+        data = connection.recv(1).decode()
         if data:
             msg += data
         else:

@@ -13,7 +13,7 @@ RANGE_OF_CHARS = 52  # Include a-z and A-Z
 def receive_message(connection):
     msg = ""
     while True:
-        data = connection.recv(16).decode()
+        data = connection.recv(1).decode()
         if data:
             msg += data
         else:
@@ -31,7 +31,7 @@ def send_message(connection, msg):
 
 class Client:
     def __init__(self, client_address, socket):
-        self.client_address = client_address
+        self.client_address = str(client_address)
         self.socket = socket
 
     def send_req(self, md5, start, end):
@@ -56,14 +56,14 @@ class ClientManager:
     def waitForResults(self):
         while True:
             data = self.outputQueue.get()
-            clientID = int(data.split(":")[0])
+            clientID = data.split(":")[0]
+            print(data)
             self.activeThreads[clientID].join()
             password = data.split(":")[1]
             return password
 
     def add_client(self, client_address, connection):
-        send_message(connection, str(client_address))
-        if receive_message(connection) == "OK":
+        if receive_message(connection) == "READY":
             client = Client(client_address, connection)
             self.clients[client_address] = client
         else:
@@ -97,7 +97,7 @@ class ClientManager:
                 start += increment
                 count += 1
                 workerThread = Thread(
-                    target=freeClient.waitForResults, args=(self.outputQueue))
+                    target=freeClient.waitForResults, args=(self.outputQueue,))
                 workerThread.start()
                 self.activeThreads[free_clients[i]] = workerThread
 
