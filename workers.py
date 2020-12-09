@@ -52,7 +52,6 @@ def compareHash(actual, determined):
 
 class Worker:
     def __init__(self):
-        self.iter = 0
         self.sock = None
         self.limit = 3
         #self.ID = client_id
@@ -66,7 +65,8 @@ class Worker:
         #send_message(self.sock,msg)
         msg = receive_message(self.sock)
         send_message(self.sock, "OK")
-        self.getrequest(self.sock)
+        while True:
+            self.getrequest(self.sock)
 
     def getrequest(self,socket):
         msg = receive_message(socket)
@@ -81,24 +81,15 @@ class Worker:
 
 
     def startCracking(self, md5,start,end):
-        while(self.iter<self.limit):
-            print(f"Client Iteration Number {self.iter}")
-            res, pwd = self.crack(md5,start,end)
-            if res == True:
-                print("SUCCESS")
-                send_message(self.sock,"SUCCESS:")
-            else:
-                if self.iter<self.limit:
-                    print("RETRY")
-                    #Ask server to resend range
-                    pass
-                else:
-                    send_message(self.sock,"FAIL")
-                    self.end_connection(self.sock)
-            
-            self.iter+=1
+        res, pwd = self.crack(md5,start,end)
+        if res == True:
+            print("SUCCESS")
+            send_message(self.sock,"SUCCESS:")
+        else:
+            send_message(self.sock,"FAIL")
+            return
+    
                     
-                
     def crack(self,md5,start,end):
         return True, "hello"
         st = start
@@ -111,7 +102,6 @@ class Worker:
             determined = generated_hash("hello")
             if compareHash(md5,determined):
                 return True
-       
         return False
 
 
