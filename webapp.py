@@ -47,4 +47,5 @@ def new_req(md5,chars):
     receive_password(hashList[-1],password)
 
 
-
+if __name__ == "__main__":
+    app.run()
