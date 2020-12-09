@@ -54,16 +54,20 @@ class ClientManager:
         self.outputQueue = Queue()
 
     def waitForResults(self):
+        password = ""
         while True:
+            if len(self.activeThreads) == 0:
+                break
             data = self.outputQueue.get()
             clientID = data.split(":")[0]
             success = data.split(":")[1] == "SUCCESS"
             print(success)
+            print(data)
             self.activeThreads[clientID].join()
             self.activeThreads.pop(clientID)
             if success:
                 password = data.split(":")[2]
-                return password
+        return password
 
     def add_client(self, key, connection):
         if receive_message(connection) == "READY":

@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request, url_for, flash, redirect
 from threading import Thread
 import management_service as manager
+from queue import Queue
 
 app = Flask(__name__)
 hashList = []
 passwordList = {}
 activeThreads = {}
 clientManager = manager.start_server(6000)
+
+dataQueue = Queue()
 
 @app.route('/')
 def index():
@@ -29,7 +32,7 @@ def receive_password(md5,password):
 
 # Mock function for new requests
 def new_req(md5):
-    clientManager.new_request(md5, 3)
+    clientManager.new_request(md5, 4)
     password = clientManager.waitForResults()
     receive_password(hashList[-1], password)
 
