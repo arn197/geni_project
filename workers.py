@@ -6,7 +6,7 @@ import hashlib
 
 
 def numtobase(data):
-    str = "ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLNMOPQRSTUVWXYZ"
     #str = "123456789ABCDEF"
     s = ""
     if data == 0:
@@ -63,6 +63,7 @@ class Worker:
         self.sock.connect(server_address)
         #msg = str(self.client_id) + " Connected to server"
         #send_message(self.sock,msg)
+        #msg = receive_message(self.sock)
         send_message(self.sock, "READY")
         while True:
             self.getrequest(self.sock)
@@ -73,32 +74,36 @@ class Worker:
         md5 = temp[0]
         start = int(temp[1])
         end = int(temp[2])
-        send_message(socket, "OK")
-        self.startCracking(md5,start,end)
+        num_char = int(temp[3])
+        self.startCracking(md5,start,end,num_char)
 
     def end_connection(self,socket):
         socket.close()
 
 
-    def startCracking(self, md5,start,end):
-        res, pwd = self.crack(md5,start,end)
+    def startCracking(self, md5,start,end,num_char):
+        res, pwd = self.crack(md5,start,end,num_char)
         if res == True:
-            send_message(self.sock,"SUCCESS:" + pwd)
+            print("SUCCESS")
+            send_message(self.sock,"SUCCESS:")
+            msg = "Password is " + str(pwd) + " :"
+            send_message(self.sock,msg)
         else:
-            send_message(self.sock,"FAIL")    
+            send_message(self.sock,"FAIL:")
+        return
+    
                     
-    def crack(self,md5,start,end):
-        return True, "hello"
+    def crack(self,md5,start,end,num_char):
         st = start
         en = end
         for i in range(st,en+1):
             value = numtobase(i)
-            offset = 1
+            offset = num_char-len(value)
             temp = 'A'*offset + value
             print(temp)
-            determined = generated_hash("hello")
+            determined = generated_hash(temp)
             if compareHash(md5,determined):
-                return True
+                return True , determined
         return False
 
 
