@@ -36,6 +36,7 @@ def crack():
 
 # Add password to list
 def receive_password(md5,password):
+    print(md5, password)
     passwordList[md5] = password
     plist.append(password)
 
@@ -43,8 +44,8 @@ def receive_password(md5,password):
 # Function for new requests
 def new_req(md5,chars):
     clientManager.new_request(md5, chars)
-    password = clientManager.waitForResults()
-    receive_password(hashList[-1],password)
+    md5_new, password = clientManager.waitForResults()
+    receive_password(md5_new,password)
 
 
 if __name__ == "__main__":
