@@ -30,8 +30,8 @@ def send_message(connection, msg):
 
 
 class Client:
-    def __init__(self, client_address, socket):
-        self.client_address = str(client_address)
+    def __init__(self, key, socket):
+        self.key = key
         self.socket = socket
 
     def send_req(self, md5, start, end):
@@ -44,7 +44,7 @@ class Client:
 
     def waitForResults(self, outputQueue):
         msg = receive_message(self.socket)
-        outputQueue.put(str(self.client_address) + ":" + msg)
+        outputQueue.put(str(self.key) + ":" + msg)
 
 
 class ClientManager:
@@ -57,24 +57,24 @@ class ClientManager:
         while True:
             data = self.outputQueue.get()
             clientID = data.split(":")[0]
-            print(data)
             self.activeThreads[clientID].join()
-            password = data.split(":")[1]
+            self.activeThreads.pop(clientID)
+            password = data.split(":")[2]
             return password
 
-    def add_client(self, client_address, connection):
+    def add_client(self, key, connection):
         if receive_message(connection) == "READY":
-            client = Client(client_address, connection)
-            self.clients[client_address] = client
+            client = Client(key, connection)
+            self.clients[key] = client
         else:
             connection.close()
             return
 
     def get_free_clients(self):
         free_clients = []
-        for client_address in self.clients:
-            client = self.clients[client_address]
-            if client_address not in self.activeThreads:
+        for key in self.clients:
+            client = self.clients[key]
+            if key not in self.activeThreads:
                 free_clients.append(client)
         return free_clients
 
@@ -99,7 +99,7 @@ class ClientManager:
                 workerThread = Thread(
                     target=freeClient.waitForResults, args=(self.outputQueue,))
                 workerThread.start()
-                self.activeThreads[free_clients[i]] = workerThread
+                self.activeThreads[free_clients[i].key] = workerThread
 
         if count > 0:
             print('Divided work among ' + str(count) + ' workers')
@@ -112,7 +112,8 @@ def listenForClients(sock, client_manager):
     while True:
         sock.listen(1)
         connection, client_address = sock.accept()
-        client_manager.add_client(client_address, connection)
+        key = str(client_address[0]) + "-" + str(client_address[1])
+        client_manager.add_client(key, connection)
 
 
 def start_server(port_number):
