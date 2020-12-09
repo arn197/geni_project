@@ -8,7 +8,7 @@ app = Flask(__name__)
 hashList = []
 passwordList = {}
 activeThreads = {}
-#clientManager = manager.start_server(6000)
+clientManager = manager.start_server(6000)
 
 dataQueue = Queue()
 
@@ -41,11 +41,10 @@ def receive_password(md5,password):
     passwordList[md5] = password
 
 
-# Mock function for new requests
 def new_req(md5,chars):
-#    clientManager.new_request(md5, 4)
-#    password = clientManager.waitForResults()
-    receive_password(hashList[-1], "Password")
+    clientManager.new_request(md5, 4)
+    password = clientManager.waitForResults()
+    receive_password(hashList[-1], password)
 
 
 
