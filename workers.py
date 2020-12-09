@@ -94,12 +94,15 @@ class Worker:
             self.getrequest(self.sock)
 
     def getrequest(self,socket):
+        ready = receive_message(socket)
+        send_message(socket, "READY")
         msg = receive_message(socket)
         temp = msg.split('-')
         md5 = temp[0]
         start = int(temp[1])
         end = int(temp[2])
         num_char = int(temp[3])
+        print(start, end)
         send_message(socket, "OK")
         self.startCracking(md5,start,end,num_char)
 
