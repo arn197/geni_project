@@ -90,8 +90,6 @@ class Worker:
             self.getrequest(self.sock)
 
     def getrequest(self,socket):
-        ready = receive_message(socket)
-        send_message(socket, "READY")
         msg = receive_message(socket)
         temp = msg.split('-')
         md5 = temp[0]

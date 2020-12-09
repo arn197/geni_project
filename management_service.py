@@ -2,7 +2,6 @@ import socket
 import sys
 from threading import Thread
 from queue import Queue
-import time
 
 RANGE_OF_CHARS = 52  # Include a-z and A-Z
 
@@ -29,111 +28,67 @@ def receive_message(connection):
 def send_message(connection, msg):
     connection.sendall((msg + '\n').encode())
 
-def measurement(start_time,end_time):
-    RTT = end_time-start_time
-    print(f'RTT: {RTT}')
-    
+
 class Client:
     def __init__(self, key, socket):
         self.key = key
         self.socket = socket
 
-    def send_req(self, md5, start, end, n_chars):
-        try:
-            msg = str(md5) + "-" + str(start) + "-" + str(end) + "-" + str(n_chars)
-            send_message(self.socket, msg)
-            res = receive_message(self.socket)
-            if res == "OK":
-                return True
-        except:
-            pass
-        return False
-        
-
-    def waitForResults(self, outputQueue):
-        msg = receive_message(self.socket)
-        outputQueue.put(str(self.key) + ":" + msg)
+    def start(self, inputQueue, outputQueue):
+        while True:
+            req = inputQueue.get()
+            try:
+                send_message(self.socket, req)
+                res = receive_message(self.socket)
+                if res != "OK":
+                    inputQueue.put(req)
+                    break
+                msg = receive_message(self.socket)
+                outputQueue.put(str(self.key) + ":" + msg)
+            except:
+                break
 
 class ClientManager:
     def __init__(self):
         self.clients = {}
         self.activeThreads = {}
         self.outputQueue = Queue()
-        self.req_sent = False
-        self.start_time = None
-        self.end_time = None
+        self.inputQueue = Queue()
 
     def waitForResults(self):
         password = ""
         while True:
-            if len(self.activeThreads) == 0:
-                break
             data = self.outputQueue.get()
-            clientID = data.split(":")[0]
             success = data.split(":")[1] == "SUCCESS"
-            self.activeThreads[clientID].join()
-            self.activeThreads.pop(clientID)
             if success:
                 password = data.split(":")[2]
-                self.end_time = time.perf_counter()   
-                measurement(self.start_time,self.end_time)
+                break
         return password
 
     def add_client(self, key, connection):
         if receive_message(connection) == "READY":
             client = Client(key, connection)
             self.clients[key] = client
+            workerThread = Thread(target=client.start, args=(self.inputQueue, self.outputQueue))
+            workerThread.start()
         else:
             connection.close()
             return
 
-    def get_free_clients(self):
-        free_clients = []
-        to_pop = []
-        for key in self.clients:
-            client = self.clients[key]
-            if key not in self.activeThreads:
-                try:
-                    send_message(client.socket, "READY?")
-                    if receive_message(client.socket) == "READY":
-                        free_clients.append(client)
-                except:
-                    to_pop.append(client)
-        for i in to_pop:
-            self.clients.pop(i.key)
-        return free_clients
-
     def new_request(self, md5, n_chars):
-        free_clients = self.get_free_clients()
-        print(free_clients)
-        n_clients = len(free_clients)
+        n_clients = 10
         totalRange = pow(RANGE_OF_CHARS, n_chars) - 1
         increment = int(totalRange/n_clients)
         overflow = totalRange % n_clients
 
-        start = 0   
-        count = 0
+        start = 0
         for i in range(n_clients):
-            freeClient = free_clients[i]
             end = start + increment
             if i == n_clients - 1:
                 end += overflow
-            if freeClient.send_req(md5, start, end, n_chars):
-                if self.req_sent == False:
-                    self.start_time = time.perf_counter()
-                    self.req_sent = True
-                start += increment
-                count += 1
-                workerThread = Thread(
-                    target=freeClient.waitForResults, args=(self.outputQueue,))
-                workerThread.start()
-                self.activeThreads[free_clients[i].key] = workerThread
-
-        if count > 0:
-            print('Divided work among ' + str(count) + ' workers')
-        else:
-            print('Error dividing work. Please try again')
-
+            msg = str(md5) + "-" + str(start) + "-" + str(end) + "-" + str(n_chars)
+            self.inputQueue.put(msg)
+            start += increment
 
 def listenForClients(sock, client_manager):
     # Listen for incoming connections
@@ -156,7 +111,6 @@ def start_server(port_number):
 
     server_address = (socket.gethostname(), port_number)
     sock.bind(server_address)
-    #print(server_address[0])
 
     client_manager = ClientManager()
     clientListener = Thread(target=listenForClients, args=(sock, client_manager))
