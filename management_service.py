@@ -43,8 +43,9 @@ class Client:
                 if res != "OK":
                     inputQueue.put(req)
                     break
+                md5 = req.split("-")[0]
                 msg = receive_message(self.socket)
-                outputQueue.put(str(self.key) + ":" + msg)
+                outputQueue.put(md5 + ":" + msg)
             except:
                 break
 
@@ -57,13 +58,15 @@ class ClientManager:
 
     def waitForResults(self):
         password = ""
+        md5 = ""
         while True:
             data = self.outputQueue.get()
+            md5 = data.split(":")[0]
             success = data.split(":")[1] == "SUCCESS"
             if success:
                 password = data.split(":")[2]
                 break
-        return password
+        return md5, password
 
     def add_client(self, key, connection):
         if receive_message(connection) == "READY":
