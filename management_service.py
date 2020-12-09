@@ -77,6 +77,7 @@ class ClientManager:
                 password = data.split(":")[2]
                 self.end_time = time.perf_counter()   
                 measurement(self.start_time,self.end_time)
+                self.req_sent = False   
         return password
 
     def add_client(self, key, connection):
@@ -105,7 +106,6 @@ class ClientManager:
 
     def new_request(self, md5, n_chars):
         free_clients = self.get_free_clients()
-        print(free_clients)
         n_clients = len(free_clients)
         totalRange = pow(RANGE_OF_CHARS, n_chars) - 1
         increment = int(totalRange/n_clients)

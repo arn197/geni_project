@@ -90,7 +90,7 @@ class Worker:
             self.getrequest(self.sock)
 
     def getrequest(self,socket):
-        ready = receive_message(socket)
+        receive_message(socket)
         send_message(socket, "READY")
         msg = receive_message(socket)
         temp = msg.split('-')
