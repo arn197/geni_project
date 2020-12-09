@@ -7,10 +7,8 @@ import hashlib
 
 """
 Helper function to convert an integer to base 52 and return as a string.
-
 input: (int) A number in the possible range.
 output: (str) Base 52 equivalent of the number.
-
 """
 def numtobase(data):
     str = "ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -57,7 +55,6 @@ def send_message(connection,msg):
 
 """
 Helper function to convert a string to its md5 hash.
-
 input: (str) Base 52 value of an integer in the range.
 output : (str) md5 Hash.
 """
@@ -69,7 +66,6 @@ def generated_hash(data):
 
 """
 Helper function to compare md5 hash.
-
 Input: (str) input md5 hash, (str) calculated md5 hash.
 Output: boolean
 """

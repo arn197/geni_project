@@ -29,13 +29,10 @@ def receive_message(connection):
 def send_message(connection, msg):
     connection.sendall((msg + '\n').encode())
 
-def measurement(connection):
-    RTT = None
-    Throughput = None
-
-
-
-
+def measurement(start_time,end_time):
+    RTT = end_time-start_time
+    print(f'RTT: {RTT}')
+    
 class Client:
     def __init__(self, key, socket):
         self.key = key
@@ -62,6 +59,9 @@ class ClientManager:
         self.clients = {}
         self.activeThreads = {}
         self.outputQueue = Queue()
+        self.req_sent = False
+        self.start_time = None
+        self.end_time = None
 
     def waitForResults(self):
         password = ""
@@ -75,6 +75,8 @@ class ClientManager:
             self.activeThreads.pop(clientID)
             if success:
                 password = data.split(":")[2]
+                self.end_time = time.perf_counter()   
+                measurement(self.start_time,self.end_time)
         return password
 
     def add_client(self, key, connection):
@@ -117,6 +119,9 @@ class ClientManager:
             if i == n_clients - 1:
                 end += overflow
             if freeClient.send_req(md5, start, end, n_chars):
+                if self.req_sent == False:
+                    self.start_time = time.perf_counter()
+                    self.req_sent = True
                 start += increment
                 count += 1
                 workerThread = Thread(
