@@ -27,7 +27,7 @@ def numtobase(data):
 def receive_message(connection):
     msg = ""
     while True:
-        data = connection.recv(50).decode()
+        data = connection.recv(1).decode()
         if data:
             msg += data
         else:
@@ -63,8 +63,7 @@ class Worker:
         self.sock.connect(server_address)
         #msg = str(self.client_id) + " Connected to server"
         #send_message(self.sock,msg)
-        msg = receive_message(self.sock)
-        send_message(self.sock, "OK")
+        send_message(self.sock, "READY")
         while True:
             self.getrequest(self.sock)
 
@@ -74,6 +73,7 @@ class Worker:
         md5 = temp[0]
         start = int(temp[1])
         end = int(temp[2])
+        send_message(socket, "OK")
         self.startCracking(md5,start,end)
 
     def end_connection(self,socket):
@@ -83,11 +83,9 @@ class Worker:
     def startCracking(self, md5,start,end):
         res, pwd = self.crack(md5,start,end)
         if res == True:
-            print("SUCCESS")
-            send_message(self.sock,"SUCCESS:")
+            send_message(self.sock,"SUCCESS:" + pwd)
         else:
             send_message(self.sock,"FAIL")
-            return
     
                     
     def crack(self,md5,start,end):
