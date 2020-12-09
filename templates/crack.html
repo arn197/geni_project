@@ -5,7 +5,30 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <style>
 
-      #results {
+      #hash {
+        border-collapse: collapse;
+        width: 50%;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #hash td, #hash th {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      #hash tr:nth-child(even){background-color: #f2f2f2;}
+
+      #hash tr:hover {background-color: #ddd;}
+
+      #hash th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        background-color: #483D8B;
+        color: white;
+      }
+            #results {
         border-collapse: collapse;
         width: 50%;
         text-align: center;
@@ -28,7 +51,6 @@
         background-color: #483D8B;
         color: white;
       }
-
       form {
       display=block
       justify-content: center;
@@ -77,12 +99,24 @@
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
+
     $SCRIPT_ROOT = {{ request.script_root| tojson |safe }};
     (function(){
         $.getJSON(
             $SCRIPT_ROOT+"/_reload", // Your AJAX route here
             function(data) {
-                 $("#password").text(data.password)
+            var pwdlength = data.count;
+            var rows = $('#results').find('td').length;
+
+            console.log(pwdlength);
+            console.log(data);
+            console.log(rows);
+            var i;
+            for(i = rows+1 ; i <= pwdlength; i++ )
+            {
+                 $("#results ").append("<tr><td>" + data.password[data.hashList[i-1]]  + "</td></tr>");
+            }
+
             }
         );
         setTimeout(arguments.callee, 10000);
@@ -103,18 +137,26 @@
       </div>
   </form>
   <div class="table"></div>
-    <h1> Results </h1>
+    <h1> Hashes </h1>
     <hr/>
-    <table id = "results">
+    <table id = "hash">
       <tr>
         <th>Hash</th>
-        <th>Password</th>
       </tr>
-          <td>{{hashList[0]}}</td>
-          <td id = password >{{passwordList[hashList[0]]}}</td>
-        </tr>
-
+      {%for i in range(0,hlength)%}
+    <tr>
+          <td>{{hashList[i]}}</td>
+    </tr>
+      {%endfor%}
     </table>
+
+      <h1> Results </h1>
+      <hr/>
+      <table id = "results">
+        <tr>
+          <th>Password</th>
+        </tr>
+      </table>
   </div>
   </body>
 </html>

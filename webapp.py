@@ -7,9 +7,9 @@ import hashlib
 app = Flask(__name__)
 hashList = []
 passwordList = {}
+plist = []
 activeThreads = {}
 clientManager = manager.start_server(6000)
-
 dataQueue = Queue()
 
 @app.route('/')
@@ -18,9 +18,7 @@ def index():
 
 @app.route('/_reload')
 def reload():
-    if len(passwordList) == 0:
-        return jsonify(password="In progress")
-    return jsonify(password=passwordList[hashList[0]])
+        return jsonify(password=passwordList, hashList=hashList,count=len(plist))
 
 
 @app.route('/crack', methods=('GET', 'POST'))
@@ -36,16 +34,22 @@ def crack():
         activeThreads[md5] = workerThread
     return render_template('crack.html',hlength = len(hashList), hashList = hashList, passwordList = passwordList)
 
-# Server can call this to return new found password
+# Add password to list
 def receive_password(md5,password):
     passwordList[md5] = password
+    plist.append(password)
 
 
+# Function for new requests
 def new_req(md5,chars):
     clientManager.new_request(md5, chars)
     password = clientManager.waitForResults()
+<<<<<<< HEAD
     print(password)
     receive_password(hashList[-1], password)
+=======
+    receive_password(hashList[-1],password)
+>>>>>>> 72b6d1e09c72880ab93b39158a106a5711a326b9
 
 
 
