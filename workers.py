@@ -5,6 +5,13 @@ from collections import deque
 import hashlib
 
 
+"""
+Helper function to convert an integer to base 52 and return as a string.
+
+input: (int) A number in the possible range.
+output: (str) Base 52 equivalent of the number.
+
+"""
 def numtobase(data):
     str = "ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     #str = "123456789ABCDEF"
@@ -24,6 +31,10 @@ def numtobase(data):
             #print(s)
     return s
 
+"""
+Helper function to receive messages.
+input: Socket
+"""
 def receive_message(connection):
     msg = ""
     while True:
@@ -37,14 +48,31 @@ def receive_message(connection):
     return msg.rstrip()
 
 
+"""
+Helper function to send messages.
+input: Socket, (str) message
+"""
 def send_message(connection,msg):
     connection.sendall((msg + '\n').encode())
 
+"""
+Helper function to convert a string to its md5 hash.
 
-def generated_hash(data):
+input: (str) Base 52 value of an integer in the range.
+output : (str) md5 Hash.
+"""
+def generated_hash(data):               
     result = hashlib.md5(data.encode())
     return result.hexdigest()
 
+
+
+"""
+Helper function to compare md5 hash.
+
+Input: (str) input md5 hash, (str) calculated md5 hash.
+Output: boolean
+"""
 def compareHash(actual, determined):
     if determined == actual:
         return True
@@ -53,9 +81,6 @@ def compareHash(actual, determined):
 class Worker:
     def __init__(self):
         self.sock = None
-        self.limit = 3
-        #self.ID = client_id
-        self.cracked = False
 
     def startWorkers(self,address, port_num):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -114,4 +139,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
+#Shoumik-ElementryOS

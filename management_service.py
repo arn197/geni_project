@@ -2,6 +2,7 @@ import socket
 import sys
 from threading import Thread
 from queue import Queue
+import time
 
 RANGE_OF_CHARS = 52  # Include a-z and A-Z
 
@@ -27,6 +28,12 @@ def receive_message(connection):
 
 def send_message(connection, msg):
     connection.sendall((msg + '\n').encode())
+
+def measurement(connection):
+    RTT = None
+    Throughput = None
+
+
 
 
 class Client:
@@ -93,7 +100,7 @@ class ClientManager:
         increment = int(totalRange/n_clients)
         overflow = totalRange % n_clients
 
-        start = 0
+        start = 0   
         count = 0
         for i in range(n_clients):
             freeClient = free_clients[i]
@@ -135,6 +142,7 @@ def start_server(port_number):
 
     server_address = (socket.gethostname(), port_number)
     sock.bind(server_address)
+    #print(server_address[0])
 
     client_manager = ClientManager()
     clientListener = Thread(target=listenForClients, args=(sock, client_manager))

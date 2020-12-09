@@ -24,34 +24,35 @@ def numtobase(data):
     return s
 
 
+def generated_hash(data):
+    result = hashlib.md5(data.encode())
+    return result.hexdigest()
 
-for i in range(0, 140607):
+def compareHash(actual, determined):
+    if determined == actual:
+        return True
+
+
+org = generated_hash('AAron')
+
+for i in range(100000, 380204032):
 
     value = numtobase(i)
-    # print(f'value after base 52:  {value}')
-    offset = 3-len(value)
+    #print(f'value after base 52:  {value}')
+    offset = 5-len(value)
     temp = 'A'*offset + value
-    if temp == 'abc':
-        print("hello")
+    print(f'value after offet:  {temp}')
+    calc = generated_hash(temp)
 
-
-    # temp = 'A'*offset + value
-
-
-    # print(f' Value for length of 5: {temp}')
-    # value = numtobase(i)
-    # offset = 1
-    # temp = 'A'*offset + value
-    # print(temp)
-        calc = hashlib.md5(temp.encode())
-
-
-        org = "900150983cd24fb0d6963f7d28e17f72"
-    # print(org)
-    # print(calc.digest())
-        print(calc.hexdigest(), org)
-
-        if org == calc.digest():
-            print('True')
+    print(i)
+    print(org)
+    print(calc)
+        
+    if org == calc:
+        print('True')
+        print(temp)
+        break
+    else:
+        print('False')
 
 
