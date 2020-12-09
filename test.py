@@ -33,12 +33,11 @@ def compareHash(actual, determined):
         return True
 
 
-org = generated_hash('AAron')
+org = generated_hash('AAAAz')
 
-for i in range(100000, 380204032):
-
+for i in range(0, 380204032):
     value = numtobase(i)
-    #print(f'value after base 52:  {value}')
+    #rint(f'value after base 52:  {value}')
     offset = 5-len(value)
     temp = 'A'*offset + value
     print(f'value after offet:  {temp}')

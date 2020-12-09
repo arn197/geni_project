@@ -89,6 +89,15 @@ class Worker:
         while True:
             self.getrequest(self.sock)
 
+
+    def end_connection(self,socket):
+        socket.close()
+
+    """
+    The function that listens to request message from the server. It splits the request  message
+    to get the original md5 hash, the range to iterate over and the number of characters in the password.
+    The worker sends an ok message to the management server
+    """
     def getrequest(self,socket):
         msg = receive_message(socket)
         temp = msg.split('-')
@@ -99,10 +108,6 @@ class Worker:
         print(start, end)
         send_message(socket, "OK")
         self.startCracking(md5,start,end,num_char)
-
-    def end_connection(self,socket):
-        socket.close()
-
 
     def startCracking(self, md5,start,end,num_char):
         res, pwd = self.crack(md5,start,end,num_char)
@@ -115,6 +120,11 @@ class Worker:
         return
     
                     
+    """
+    The cracking algorithm is written here. The worker iterates through numbers in the range and converts
+    the numbers to their base 52 equivalent. IT then calculates the md5 hash of these bas52 equivalents and 
+    compares to the original md5. If it is a match, then the base52 equivant is returned as the cracked password.
+    """
     def crack(self,md5,start,end,num_char):
         st = start
         en = end
@@ -136,5 +146,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-#Shoumik-ElementryOS
