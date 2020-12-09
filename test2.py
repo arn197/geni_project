@@ -26,13 +26,21 @@ def numtobase(data):
 
 def generated_hash(data):
     result = hashlib.md5(data.encode())
-    return result.digest()
+    return result.hexdigest()
 
 
 
-org = generated_hash('hi')
+org = generated_hash('aaaa')
+det = generated_hash('aaaa')
+
 print(org)
+print(det)
 
+if (org==det):
+    print(True)
+else:
+    print(False)
+#0cc175b9c0f1b6a831c399e269772661
 
 
 # value = numtobase(140607)

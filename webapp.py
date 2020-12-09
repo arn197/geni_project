@@ -31,7 +31,7 @@ def crack():
         result = hashlib.md5(pwd.encode())
         md5 = result.hexdigest()
         hashList.append(md5)
-        workerThread = Thread(target=new_req, args=([md5],chars))
+        workerThread = Thread(target=new_req, args=(md5,chars))
         workerThread.start()
         activeThreads[md5] = workerThread
     return render_template('crack.html',hlength = len(hashList), hashList = hashList, passwordList = passwordList)
@@ -42,8 +42,9 @@ def receive_password(md5,password):
 
 
 def new_req(md5,chars):
-    clientManager.new_request(md5, 4)
+    clientManager.new_request(md5, chars)
     password = clientManager.waitForResults()
+    print(password)
     receive_password(hashList[-1], password)
 
 
