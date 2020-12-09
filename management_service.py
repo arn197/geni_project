@@ -2,6 +2,7 @@ import socket
 import sys
 from threading import Thread
 from queue import Queue
+import time
 
 RANGE_OF_CHARS = 52  # Include a-z and A-Z
 
@@ -28,6 +29,9 @@ def receive_message(connection):
 def send_message(connection, msg):
     connection.sendall((msg + '\n').encode())
 
+def measurement(start_time,end_time):	
+    RTT = end_time-start_time	
+    print(f'RTT: {RTT}')
 
 class Client:
     def __init__(self, key, socket):
@@ -55,6 +59,9 @@ class ClientManager:
         self.activeThreads = {}
         self.outputQueue = Queue()
         self.inputQueue = Queue()
+        self.req_sent = False
+        self.start_time = None	
+        self.end_time = None
 
     def waitForResults(self):
         password = ""
@@ -65,6 +72,9 @@ class ClientManager:
             success = data.split(":")[1] == "SUCCESS"
             if success:
                 password = data.split(":")[2]
+                self.end_time = time.perf_counter()
+                measurement(self.start_time,self.end_time)
+                self.req_sent = False
                 break
         return md5, password
 
@@ -90,6 +100,9 @@ class ClientManager:
             if i == n_clients - 1:
                 end += overflow
             msg = str(md5) + "-" + str(start) + "-" + str(end) + "-" + str(n_chars)
+            if self.req_sent == False:
+                self.start_time = time.perf_counter()
+                self.req_sent = True
             self.inputQueue.put(msg)
             start += increment
 
