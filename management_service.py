@@ -35,17 +35,20 @@ class Client:
         self.socket = socket
 
     def send_req(self, md5, start, end, n_chars):
-        msg = str(md5) + "-" + str(start) + "-" + str(end) + "-" + str(n_chars)
-        send_message(self.socket, msg)
-        res = receive_message(self.socket)
-        if res == "OK":
-            return True
+        try:
+            msg = str(md5) + "-" + str(start) + "-" + str(end) + "-" + str(n_chars)
+            send_message(self.socket, msg)
+            res = receive_message(self.socket)
+            if res == "OK":
+                return True
+        except:
+            pass
         return False
+        
 
     def waitForResults(self, outputQueue):
         msg = receive_message(self.socket)
         outputQueue.put(str(self.key) + ":" + msg)
-
 
 class ClientManager:
     def __init__(self):
@@ -61,8 +64,6 @@ class ClientManager:
             data = self.outputQueue.get()
             clientID = data.split(":")[0]
             success = data.split(":")[1] == "SUCCESS"
-            print(success)
-            print(data)
             self.activeThreads[clientID].join()
             self.activeThreads.pop(clientID)
             if success:
@@ -79,10 +80,18 @@ class ClientManager:
 
     def get_free_clients(self):
         free_clients = []
+        to_pop = []
         for key in self.clients:
             client = self.clients[key]
             if key not in self.activeThreads:
-                free_clients.append(client)
+                try:
+                    send_message(client.socket, "READY?")
+                    if receive_message(client.socket) == "READY":
+                        free_clients.append(client)
+                except:
+                    to_pop.append(client)
+        for i in to_pop:
+            self.clients.pop(i.key)
         return free_clients
 
     def new_request(self, md5, n_chars):
