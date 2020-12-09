@@ -34,8 +34,8 @@ class Client:
         self.key = key
         self.socket = socket
 
-    def send_req(self, md5, start, end):
-        msg = str(md5) + "-" + str(start) + "-" + str(end)
+    def send_req(self, md5, start, end, n_chars):
+        msg = str(md5) + "-" + str(start) + "-" + str(end) + "-" + str(n_chars)
         send_message(self.socket, msg)
         res = receive_message(self.socket)
         if res == "OK":
@@ -57,10 +57,12 @@ class ClientManager:
         while True:
             data = self.outputQueue.get()
             clientID = data.split(":")[0]
+            success = data.split(":")[1] == "SUCCESS"
             self.activeThreads[clientID].join()
             self.activeThreads.pop(clientID)
-            password = data.split(":")[2]
-            return password
+            if success:
+                password = data.split(":")[2]
+                return password
 
     def add_client(self, key, connection):
         if receive_message(connection) == "READY":
@@ -93,7 +95,7 @@ class ClientManager:
             end = start + increment
             if i == n_clients - 1:
                 end += overflow
-            if freeClient.send_req(md5, start, end):
+            if freeClient.send_req(md5, start, end, n_chars):
                 start += increment
                 count += 1
                 workerThread = Thread(

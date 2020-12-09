@@ -29,7 +29,7 @@ def receive_password(md5,password):
 
 # Mock function for new requests
 def new_req(md5):
-    clientManager.new_request(md5, 5)
+    clientManager.new_request(md5, 3)
     password = clientManager.waitForResults()
     receive_password(hashList[-1], password)
 

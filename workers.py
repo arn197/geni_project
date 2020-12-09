@@ -75,6 +75,7 @@ class Worker:
         start = int(temp[1])
         end = int(temp[2])
         num_char = int(temp[3])
+        send_message(socket, "OK")
         self.startCracking(md5,start,end,num_char)
 
     def end_connection(self,socket):
@@ -85,9 +86,8 @@ class Worker:
         res, pwd = self.crack(md5,start,end,num_char)
         if res == True:
             print("SUCCESS")
-            send_message(self.sock,"SUCCESS:")
             msg = "Password is " + str(pwd) + " :"
-            send_message(self.sock,msg)
+            send_message(self.sock,"SUCCESS:" + msg)
         else:
             send_message(self.sock,"FAIL:")
         return
@@ -104,7 +104,7 @@ class Worker:
             determined = generated_hash(temp)
             if compareHash(md5,determined):
                 return True , determined
-        return False
+        return False, ""
 
 
 def main():
