@@ -44,12 +44,7 @@ def receive_password(md5,password):
 def new_req(md5,chars):
     clientManager.new_request(md5, chars)
     password = clientManager.waitForResults()
-<<<<<<< HEAD
-    print(password)
-    receive_password(hashList[-1], password)
-=======
     receive_password(hashList[-1],password)
->>>>>>> 72b6d1e09c72880ab93b39158a106a5711a326b9
 
 
 
