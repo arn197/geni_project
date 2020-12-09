@@ -46,7 +46,7 @@ def generated_hash(data):
     return result.digest()
 
 def compareHash(actual, determined):
-    if determined is actual:
+    if determined == actual:
         return True
 
 
@@ -87,7 +87,7 @@ class Worker:
             send_message(self.sock,"SUCCESS:")
         else:
             send_message(self.sock,"FAIL")
-            return
+        return
     
                     
     def crack(self,md5,start,end):
