@@ -75,6 +75,20 @@
       }
 
     </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+    $SCRIPT_ROOT = {{ request.script_root| tojson |safe }};
+    (function(){
+        $.getJSON(
+            $SCRIPT_ROOT+"/_reload", // Your AJAX route here
+            function(data) {
+                 $("#password").text(data.password)
+            }
+        );
+        setTimeout(arguments.callee, 10000);
+    })();
+</script>
+
   </head>
   <body>
   <form action="crack" method="POST">
@@ -82,8 +96,8 @@
     <div class="formcontainer">
       <hr/>
       <div class="container">
-        <label for="hash"><strong>Hash</strong></label>
-        <input type="text" placeholder="" name="hash" required>
+        <strong>Password ( 1- 5 chars ) </strong>
+        <input type="text" placeholder="" name="pwd" maxlength="5" required>
       </div>
       <button type="submit">Submit</button>
       </div>
@@ -96,12 +110,10 @@
         <th>Hash</th>
         <th>Password</th>
       </tr>
-        {%for i in range(0, hlength)%}
-        <tr>
-          <td>{{hashList[i]}}</td>
-          <td>{{passwordList[hashList[i]]}}</td>
+          <td>{{hashList[0]}}</td>
+          <td id = password >{{passwordList[hashList[0]]}}</td>
         </tr>
-        {%endfor%}
+
     </table>
   </div>
   </body>
