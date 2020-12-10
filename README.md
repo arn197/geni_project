@@ -32,6 +32,7 @@ with command `fuser -k 6001/tcp`
 
 The link to our demo is here: https://drive.google.com/file/d/1FRWHhTjJ3a0sMqYxkwzPvF_QAhywVvxM/view?usp=sharing
 
+Note : There will be a delay of 10s (the page reloads every 10s) before a cracked password reflects in the interface. This is Flask implementation issue rather than an issue with the distributed system.
 
 
 
