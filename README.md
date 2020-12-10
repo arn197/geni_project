@@ -1,6 +1,7 @@
 
 
-#Distributed Password Cracker WebApp
+# Distributed Password Cracker WebApp
+----------------------------------
 
 
 The intention of this webapp is to brute force a 5 character from the md5 hash generated. 
@@ -9,7 +10,7 @@ The intention of this webapp is to brute force a 5 character from the md5 hash g
 
 2) Once the nodes are available, clone this GitHub repo to all the nodes available
 
-3) On all the worker nodes run `python3 workers.py <server host name> <port>` where serverhostname is "server" and port is set to "6001"
+3) On all the worker nodes run `python3 workers.py <server host name> <port>` where serverhostname is __"server"__ and port is set to __"6001"__
 
 4) Login to the server node
 
