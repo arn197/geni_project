@@ -89,7 +89,7 @@ class ClientManager:
             return
 
     def new_request(self, md5, n_chars):
-        n_clients = 10
+        n_clients = 1000
         totalRange = pow(RANGE_OF_CHARS, n_chars) - 1
         increment = int(totalRange/n_clients)
         overflow = totalRange % n_clients
