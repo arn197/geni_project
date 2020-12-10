@@ -18,11 +18,11 @@ The intention of this webapp is to brute force a 5 character from the md5 hash g
     On line 2: 'Servername   "Your server IP address"` 
 
 6) Run the deployment script `deploy.sh`. This script does the following  
-     a)  Adds the packages required (Flask) 
-     b)  Installs apache2 and required wsgi libraries
-     c)  Transfers files to /var/www/html public folder 
-     d)  Configures the virtual host settings
-     e)  Runs apache service
+     1)  Adds the packages required (Flask) 
+     2)  Installs apache2 and required wsgi libraries
+     3)  Transfers files to /var/www/html public folder 
+     4)  Configures the virtual host settings
+     5)  Runs apache service
 
 Your webserver is up and running! Open the browser and enter your server IP in the url.  
  
