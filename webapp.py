@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from threading import Thread
-import management_service as manager
+from geni_project import management_service as manager
 from queue import Queue
 import hashlib
 
@@ -9,7 +9,7 @@ hashList = []
 passwordList = {}
 plist = []
 activeThreads = {}
-clientManager = manager.start_server(6000)
+clientManager = manager.start_server(6001)
 dataQueue = Queue()
 
 @app.route('/')
